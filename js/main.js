@@ -1,5 +1,6 @@
 import * as THREE from "https://cdn.skypack.dev/three@0.129.0";
-import * as THREE from "https://cdn.skypack.dev/three@0.129.0";
+import { OrbitControls } from "https://cdn.skypack.dev/three@0.129.0/examples/jsm/controls/OrbitControls.js";
+
 
 let scene,camera , renderer,controls,skybox;
 let  sun,venus,mercury,earth,mars, jupiter, saturn, uranus,neptune;
@@ -23,7 +24,7 @@ let neptune_evolution_speed = 0.5;
 let uranus_evolution_speed = 0.4;
 
 function createMatrixArray() {
-    const skyboxImagepaths = ["../img/skybox/space_ft.png","../img/skybox/space_dn.png","../img/skybox/space_lf.png","../img/skybox/space_rt.png","../img/skybox/space_up.png"]
+ const skyboxImagepaths = ['../img/skybox/space_ft.png', '../img/skybox/space_bk.png', '../img/skybox/space_up.png', '../img/skybox/space_dn.png', '../img/skybox/space_rt.png', '../img/skybox/space_lf.png']
     const materialArray = skyboxImagepaths.map((image) => {
         let texture = new THREE.TextureLoader().load(image);
         return new THREE.MeshBasicMaterial({map: texture, side: THREE.BackSide})
@@ -44,7 +45,7 @@ function init(){
     camera = new THREE.PerspectiveCamera(
         85, // angle
         window.innerWidth/window.innerHeight, // aspect ratio
-        0.>1, //near
+        0.1, //near
         1000, // far 
        
     )
@@ -53,5 +54,21 @@ function init(){
     renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
     renderer.setSize(window.innerWidth,window.innerHeight)
     document.body.appendChild(renderer.domElement);
+    renderer.domElement.id = "c";
+    controls = new OrbitControls(camera,renderer.domElement);
+    controls.minDistance = 12;
+    controls.maxDistance = 1000;
+    camera.position.z = 200;
     
 }
+
+function animate(time){
+    requestAnimationFrame(animate);
+
+    const rotationSpeed = 0.005;
+    controls.update()
+    renderer.render(scene,camera);
+}
+
+init();
+animate(0);
