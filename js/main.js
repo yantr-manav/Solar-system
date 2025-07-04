@@ -4,6 +4,9 @@ import { OrbitControls } from "https://cdn.skypack.dev/three@0.129.0/examples/js
 
 let scene,camera , renderer,controls,skybox;
 let  sun,venus,mercury,earth,mars, jupiter, saturn, uranus,neptune;
+let isAnimating = true;
+let globalSpeedMultiplier = 1;
+let animationId;
 
 let mercury_orbit_radius = 50;
 let venus_orbit_radius = 60;
@@ -14,14 +17,26 @@ let saturn_orbit_radius = 120;
 let neptune_orbit_radius = 140;
 let uranus_orbit_radius = 160;
 
-let mercury_revolution_speed = 2;
-let venus_revolution_speed = 1.5;
-let earth_revolution_speed = 1;
-let mars_revolution_speed = 0.8;
-let jupiter_revolution_speed = 0.7;
-let saturn_revolution_speed = 0.6;
-let neptune_revolution_speed = 0.5;
-let uranus_revolution_speed = 0.4;
+const baseRevolutionSpeeds = {
+    mercury: 2,
+    venus: 1.5,
+    earth: 1,
+    mars: 0.8,
+    jupiter: 0.7,
+    saturn: 0.6,
+    neptune: 0.5,
+    uranus: 0.4
+};
+
+        // Current revolution speeds (will be modified by sliders)
+let mercury_revolution_speed = baseRevolutionSpeeds.mercury;
+let venus_revolution_speed = baseRevolutionSpeeds.venus;
+let earth_revolution_speed = baseRevolutionSpeeds.earth;
+let mars_revolution_speed = baseRevolutionSpeeds.mars;
+let jupiter_revolution_speed = baseRevolutionSpeeds.jupiter;
+let saturn_revolution_speed = baseRevolutionSpeeds.saturn;
+let neptune_revolution_speed = baseRevolutionSpeeds.neptune;
+let uranus_revolution_speed = baseRevolutionSpeeds.uranus;
 
 function createMatrixArray() {
  const skyboxImagepaths = ['../img/skybox/space_ft.png', '../img/skybox/space_bk.png', '../img/skybox/space_up.png', '../img/skybox/space_dn.png', '../img/skybox/space_rt.png', '../img/skybox/space_lf.png']
@@ -129,13 +144,15 @@ function planetRevolver(time,speed,planet,orbitRadius,planetName){
 
         // Rrevolution of Planets
     const orbitSpeedMultiplier = 0.001;
-    const planetAngle = time * orbitSpeedMultiplier * speed;
+    const planetAngle = time * orbitSpeedMultiplier * speed * globalSpeedMultiplier;
 
     planet.position.x = sun.position.x + orbitRadius * Math.cos(planetAngle)
     planet.position.z = sun.position.z + orbitRadius * Math.sin(planetAngle)
 }
 function animate(time){
-    requestAnimationFrame(animate);
+                if (isAnimating) {
+                animationId = requestAnimationFrame(animate);
+
 
     const rotationSpeed = 0.005;
     sun.rotation.y += rotationSpeed;
@@ -161,7 +178,7 @@ function animate(time){
     controls.update();
     renderer.render(scene,camera);
 }
-
+}
 function onWindowResize(){
     camera.aspect = window.innerWidth/window.innerHeight;
     camera.updateProjectionMatrix();
@@ -169,6 +186,98 @@ function onWindowResize(){
     )
 }
 window.addEventListener("resize",onWindowResize,false)
+
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        startBtn.addEventListener('click', () => {
+            if (!isAnimating) {
+                isAnimating = true;
+                startBtn.classList.add('active');
+                stopBtn.classList.remove('active');
+                animate(performance.now());
+            }
+        });
+
+        stopBtn.addEventListener('click', () => {
+            if (isAnimating) {
+                isAnimating = false;
+                cancelAnimationFrame(animationId);
+                stopBtn.classList.add('active');
+                startBtn.classList.remove('active');
+            }
+        });
+
+                resetBtn.addEventListener('click', () => {
+            // Reset all planet positions
+            mercury.position.set(mercury_orbit_radius, 0, 0);
+            venus.position.set(venus_orbit_radius, 0, 0);
+            earth.position.set(earth_orbit_radius, 0, 0);
+            mars.position.set(mars_orbit_radius, 0, 0);
+            jupiter.position.set(jupiter_orbit_radius, 0, 0);
+            saturn.position.set(saturn_orbit_radius, 0, 0);
+            neptune.position.set(neptune_orbit_radius, 0, 0);
+            uranus.position.set(uranus_orbit_radius, 0, 0);
+            
+            // Reset all speeds
+            Object.keys(baseRevolutionSpeeds).forEach(planet => {
+                const slider = document.getElementById(`${planet}-speed`);
+                const value = document.getElementById(`${planet}-value`);
+                slider.value = baseRevolutionSpeeds[planet];
+                value.textContent = baseRevolutionSpeeds[planet] + 'x';
+            });
+            
+            // Reset global speed
+            document.getElementById('global-speed').value = 1;
+            document.getElementById('global-value').textContent = '1x';
+            globalSpeedMultiplier = 1;
+            
+            // Update revolution speeds
+            mercury_revolution_speed = baseRevolutionSpeeds.mercury;
+            venus_revolution_speed = baseRevolutionSpeeds.venus;
+            earth_revolution_speed = baseRevolutionSpeeds.earth;
+            mars_revolution_speed = baseRevolutionSpeeds.mars;
+            jupiter_revolution_speed = baseRevolutionSpeeds.jupiter;
+            saturn_revolution_speed = baseRevolutionSpeeds.saturn;
+            neptune_revolution_speed = baseRevolutionSpeeds.neptune;
+            uranus_revolution_speed = baseRevolutionSpeeds.uranus;
+        });
+
+
+                // Global speed control
+        const globalSpeedSlider = document.getElementById('global-speed');
+        const globalSpeedValue = document.getElementById('global-value');
+
+        globalSpeedSlider.addEventListener('input', (e) => {
+            globalSpeedMultiplier = parseFloat(e.target.value);
+            globalSpeedValue.textContent = globalSpeedMultiplier + 'x';
+        });
+
+        // Individual planet speed controls
+        const planets = ['mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'neptune', 'uranus'];
+        
+        planets.forEach(planet => {
+            const slider = document.getElementById(`${planet}-speed`);
+            const valueDisplay = document.getElementById(`${planet}-value`);
+
+            slider.addEventListener('input', (e) => {
+                const speed = parseFloat(e.target.value);
+                valueDisplay.textContent = speed + 'x';
+                
+                // Update the corresponding revolution speed variable
+                switch(planet) {
+                    case 'mercury': mercury_revolution_speed = speed; break;
+                    case 'venus': venus_revolution_speed = speed; break;
+                    case 'earth': earth_revolution_speed = speed; break;
+                    case 'mars': mars_revolution_speed = speed; break;
+                    case 'jupiter': jupiter_revolution_speed = speed; break;
+                    case 'saturn': saturn_revolution_speed = speed; break;
+                    case 'neptune': neptune_revolution_speed = speed; break;
+                    case 'uranus': uranus_revolution_speed = speed; break;
+                }
+            });
+        });
 
 init();
 animate(0);

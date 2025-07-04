@@ -10,13 +10,64 @@
 </head>
 
 <body>
-    <nav id="navbar">
-        <button class="bg-white text-white font-bold text-2xl">start</button>
+ <nav id="navbar" class="glassmorphic">
+        <div class="navbar-title">Solar System Control</div>
+        
+        <div class="button-group">
+            <button id="startBtn" class="control-button active">▶ Start</button>
+            <button id="stopBtn" class="control-button">⏸ Stop</button>
+            <button id="resetBtn" class="control-button">↻ Reset</button>
+        </div>
 
+        <div class="global-speed-control">
+            <span class="global-speed-label">Global Speed:</span>
+            <input type="range" class="global-speed-slider" id="global-speed" min="0.1" max="3" step="0.1" value="1">
+            <span class="speed-value" id="global-value">1x</span>
+        </div>
+
+        <div class="controls-grid">
+            <div class="planet-control">
+                <span class="planet-label">Mercury</span>
+                <input type="range" class="speed-slider" id="mercury-speed" min="0.1" max="5" step="0.1" value="2">
+                <span class="speed-value" id="mercury-value">2x</span>
+            </div>
+            <div class="planet-control">
+                <span class="planet-label">Venus</span>
+                <input type="range" class="speed-slider" id="venus-speed" min="0.1" max="5" step="0.1" value="1.5">
+                <span class="speed-value" id="venus-value">1.5x</span>
+            </div>
+            <div class="planet-control">
+                <span class="planet-label">Earth</span>
+                <input type="range" class="speed-slider" id="earth-speed" min="0.1" max="5" step="0.1" value="1">
+                <span class="speed-value" id="earth-value">1x</span>
+            </div>
+            <div class="planet-control">
+                <span class="planet-label">Mars</span>
+                <input type="range" class="speed-slider" id="mars-speed" min="0.1" max="5" step="0.1" value="0.8">
+                <span class="speed-value" id="mars-value">0.8x</span>
+            </div>
+            <div class="planet-control">
+                <span class="planet-label">Jupiter</span>
+                <input type="range" class="speed-slider" id="jupiter-speed" min="0.1" max="5" step="0.1" value="0.7">
+                <span class="speed-value" id="jupiter-value">0.7x</span>
+            </div>
+            <div class="planet-control">
+                <span class="planet-label">Saturn</span>
+                <input type="range" class="speed-slider" id="saturn-speed" min="0.1" max="5" step="0.1" value="0.6">
+                <span class="speed-value" id="saturn-value">0.6x</span>
+            </div>
+            <div class="planet-control">
+                <span class="planet-label">Neptune</span>
+                <input type="range" class="speed-slider" id="neptune-speed" min="0.1" max="5" step="0.1" value="0.5">
+                <span class="speed-value" id="neptune-value">0.5x</span>
+            </div>
+            <div class="planet-control">
+                <span class="planet-label">Uranus</span>
+                <input type="range" class="speed-slider" id="uranus-speed" min="0.1" max="5" step="0.1" value="0.4">
+                <span class="speed-value" id="uranus-value">0.4x</span>
+            </div>
+        </div>
     </nav>
-
-
-
 
 
 </body>
