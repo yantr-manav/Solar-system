@@ -24,7 +24,7 @@ let neptune_evolution_speed = 0.5;
 let uranus_evolution_speed = 0.4;
 
 function createMatrixArray() {
- const skyboxImagepaths = ['../img/skybox/space_ft.png', '../img/skybox/space_bk.png', '../img/skybox/space_up.png', '../img/skybox/space_dn.png', '../img/skybox/space_rt.png', '../img/skybox/space_lf.png']
+ const skyboxImagepaths = ['img/skybox/space_ft.png', 'img/skybox/space_bk.png', 'img/skybox/space_up.png', 'img/skybox/space_dn.png', 'img/skybox/space_rt.png', 'img/skybox/space_lf.png']
     const materialArray = skyboxImagepaths.map((image) => {
         let texture = new THREE.TextureLoader().load(image);
         return new THREE.MeshBasicMaterial({map: texture, side: THREE.BackSide})
@@ -40,6 +40,17 @@ function setSkyBox(){
     scene.add(skybox)
 }
 
+
+function loadPlanetTexture(texture,radius,widthSegments,heightSegments,meshType){
+    const geometry = new THREE.SphereGeometry(radius,widthSegments,heightSegments);
+    const loader = new THREE.TextureLoader();
+    const planetTexture = loader.load(texture);
+    const material = new THREE.MeshBasicMaterial({map:planetTexture});
+
+    const planet = new THREE.Mesh(geometry,material);
+    return planet
+
+}
 function init(){
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(
@@ -51,6 +62,25 @@ function init(){
     )
     setSkyBox()
 
+    sun = loadPlanetTexture("img/sun_hd.jpg",20,100,100,'basic');
+    mercury = loadPlanetTexture("img/mercury_hd.jpg",2,100,100,'standard');
+    venus = loadPlanetTexture("img/venus_hd.jpg",3,100,100,'standard');
+    earth = loadPlanetTexture("img/earth_hd.jpg",4,100,100,'standard');
+    mars= loadPlanetTexture("img/mars_hd.jpg",3.5,100,100,'standard');
+    jupiter= loadPlanetTexture("img/jupiter_hd.jpg",10,100,100,'standard');
+    saturn = loadPlanetTexture("img/saturn_hd.jpg",8,100,100,'standard');
+    neptune = loadPlanetTexture("img/neptune_hd.jpg",6,100,100,'standard');
+    uranus= loadPlanetTexture("img/uranus_hd.jpg",5,100,100,'standard');
+    scene.add(sun)
+    scene.add(mercury)
+    scene.add(venus)
+    scene.add(earth)
+    scene.add(mars)
+    scene.add(jupiter)
+    scene.add(saturn)
+    scene.add(neptune)
+    scene.add(uranus)
+    
     renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
     renderer.setSize(window.innerWidth,window.innerHeight)
     document.body.appendChild(renderer.domElement);
@@ -58,7 +88,9 @@ function init(){
     controls = new OrbitControls(camera,renderer.domElement);
     controls.minDistance = 12;
     controls.maxDistance = 1000;
-    camera.position.z = 200;
+    camera.position.z = 100;
+
+
     
 }
 
@@ -66,6 +98,7 @@ function animate(time){
     requestAnimationFrame(animate);
 
     const rotationSpeed = 0.005;
+    sunrotation.y += rotationSpeed;
     controls.update()
     renderer.render(scene,camera);
 }
