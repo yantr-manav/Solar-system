@@ -181,11 +181,20 @@ function animate(time){
     planetRevolver(time,saturn_revolution_speed,saturn,saturn_orbit_radius,'saturn');
     planetRevolver(time,neptune_revolution_speed,neptune,neptune_orbit_radius,'neptune');
     planetRevolver(time,uranus_revolution_speed,uranus,uranus_orbit_radius,'uranus');
-    planetRevolver(time,moon__revolution_speed,moon,moon_orbit_radius,'moon');
+    
+// Moon revolves around Earth, not the Sun
+const moonAngle = time * 0.001 * moon__revolution_speed * globalSpeedMultiplier;
+moon.position.x = earth.position.x + moon_orbit_radius * Math.cos(moonAngle);
+moon.position.z = earth.position.z + moon_orbit_radius * Math.sin(moonAngle);
+moon.position.y = earth.position.y; // Optional if 3D orbit not needed
 
     controls.update();
     renderer.render(scene,camera);
 }
+// Add this outside animate()
+const moon_orbit_speed = baseRevolutionSpeeds.moon * globalSpeedMultiplier;
+
+
 }
 function onWindowResize(){
     camera.aspect = window.innerWidth/window.innerHeight;
