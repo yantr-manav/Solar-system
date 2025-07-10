@@ -3,11 +3,12 @@ import { OrbitControls } from "https://cdn.skypack.dev/three@0.129.0/examples/js
 
 
 let scene,camera , renderer,controls,skybox;
-let  sun,venus,mercury,earth,mars, jupiter, saturn, uranus,neptune;
+let  sun,venus,mercury,earth,mars, jupiter, saturn, uranus,neptune,moon;
 let isAnimating = true;
 let globalSpeedMultiplier = 1;
 let animationId;
 
+let moon_orbit_radius = 5; // Example radius for the moon's orbit
 let mercury_orbit_radius = 50;
 let venus_orbit_radius = 60;
 let earth_orbit_radius = 70;
@@ -18,6 +19,7 @@ let neptune_orbit_radius = 140;
 let uranus_orbit_radius = 160;
 
 const baseRevolutionSpeeds = {
+    moon: 0.1, // Example speed for the moon
     mercury: 2,
     venus: 1.5,
     earth: 1,
@@ -29,6 +31,7 @@ const baseRevolutionSpeeds = {
 };
 
         // Current revolution speeds (will be modified by sliders)
+let moon__revolution_speed = baseRevolutionSpeeds.moon; // Example speed for the moon
 let mercury_revolution_speed = baseRevolutionSpeeds.mercury;
 let venus_revolution_speed = baseRevolutionSpeeds.venus;
 let earth_revolution_speed = baseRevolutionSpeeds.earth;
@@ -89,7 +92,7 @@ function init(){
        
     );
     setSkyBox()
-
+    moon = loadPlanetTexture("../img/moon_hd.jpg",1,100,100,'standard');
     sun = loadPlanetTexture("../img/sun_hd.jpg",20,100,100,'basic');
     mercury = loadPlanetTexture("../img/mercury_hd.jpg",2,100,100,'standard');
     venus = loadPlanetTexture("../img/venus_hd.jpg",3,100,100,'standard');
@@ -100,7 +103,7 @@ function init(){
     neptune = loadPlanetTexture("../img/neptune_hd.jpg",6,100,100,'standard');
     uranus= loadPlanetTexture("../img/uranus_hd.jpg",5,100,100,'standard');
 
-
+    scene.add(moon)
     scene.add(sun)
     scene.add(mercury)
     scene.add(venus)
@@ -123,6 +126,7 @@ function init(){
     createRing(saturn_orbit_radius)
     createRing(neptune_orbit_radius)
     createRing(uranus_orbit_radius)
+    createRing(moon_orbit_radius)
 
     
     renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
@@ -148,6 +152,8 @@ function planetRevolver(time,speed,planet,orbitRadius,planetName){
 
     planet.position.x = sun.position.x + orbitRadius * Math.cos(planetAngle)
     planet.position.z = sun.position.z + orbitRadius * Math.sin(planetAngle)
+    moon.position.x =  earth.position.x + orbitRadius * Math.cos(planetAngle) 
+    moon.position.z = earth.position.z + orbitRadius * Math.sin(planetAngle) 
 }
 function animate(time){
                 if (isAnimating) {
@@ -155,6 +161,7 @@ function animate(time){
 
 
     const rotationSpeed = 0.005;
+    moon.rotation.y += rotationSpeed * moon__revolution_speed * globalSpeedMultiplier;
     sun.rotation.y += rotationSpeed;
     mercury.rotation.y += rotationSpeed;
     venus.rotation.y += rotationSpeed;
@@ -174,6 +181,7 @@ function animate(time){
     planetRevolver(time,saturn_revolution_speed,saturn,saturn_orbit_radius,'saturn');
     planetRevolver(time,neptune_revolution_speed,neptune,neptune_orbit_radius,'neptune');
     planetRevolver(time,uranus_revolution_speed,uranus,uranus_orbit_radius,'uranus');
+    planetRevolver(time,moon__revolution_speed,moon,moon_orbit_radius,'moon');
 
     controls.update();
     renderer.render(scene,camera);
